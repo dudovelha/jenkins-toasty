@@ -1,0 +1,28 @@
+@keyframes showToasty {
+	0%  {right: -200px;}
+	40% {right: 0px;}
+	60% {right: 0px;}
+	100% {right: -200px;}
+}
+
+html, body {
+    background: rgba(0, 0, 0, 0);
+    height: 95vh;
+    width: 95vw;
+    resize: none;
+    overflow: hidden;
+}
+
+.toasty {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: none;
+}
+
+.show-dan {
+    display: initial;
+    animation-name: showToasty;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+}

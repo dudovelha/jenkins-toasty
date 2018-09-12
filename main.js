@@ -1,27 +1,33 @@
-const {app, BrowserWindow} = require('electron')
+const {app} = require('electron');
+const Overlay = require('./window/overlay');
+const jenkins = require('jenkins')({ baseUrl: 'http://fariase:5dwz3heo.@jenkins.weg.net:8080', crumbIssuer: true, promisify: true });
+const schedule = require('node-schedule');
 
-let mainWindow;
+let overlay = new Overlay();
 
-function createWindow () {
-  mainWindow = new BrowserWindow({width: 800, height: 600})
 
-  mainWindow.loadFile('index.html')
-
-  mainWindow.on('closed', function () {
-    mainWindow = null
-  })
-}
-
-app.on('ready', createWindow)
+let jobInfo, buildInfo, lastBuild, lastUnsuccessfulBuild;
+app.on('ready', async function(){
+  overlay.createWindow()
+  jobInfo = await jenkins.job.get('pipeline-maestro');
+  lastBuild = jobInfo.lastBuild.number;
+  lastUnsuccessfulBuild = jobInfo.lastUnsuccessfulBuild.number;
+  console.log('info', jobInfo);
+  buildInfo = await jenkins.build.get('pipeline-maestro', lastBuild);
+  console.log('info', buildInfo);
+});
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
-})
+});
 
 app.on('activate', function () {
-  if (mainWindow === null) {
-    createWindow()
+  if (overlay.mainWindow === null) {
+    overlay.createWindow();
   }
-})
+});
+
+schedule.scheduleJob('*/5 * * * *', () => {
+});
