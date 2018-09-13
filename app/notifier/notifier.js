@@ -15,11 +15,12 @@ class Notifier {
                 this._overlay.toasty(['toasty']);
             }, 2000);
         }
+        this.registerNotifications();
     }
 
     registerNotifications() {
         let js = this._jenkinsStatus;
-        schedule.scheduleJob('*/5 * * * *', () => {
+        schedule.scheduleJob('* /5 * * * *', () => {
             js.update();
             if (js.status == 'FAILURE') {
                 this._overlay.toasty(js.blameList);

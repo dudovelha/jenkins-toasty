@@ -1,6 +1,6 @@
 const {app} = require('electron');
 const Notifier = require('./app/notifier/notifier');
-let test = true;
+let test = false;
 let debug = false;
 let notifier;
 

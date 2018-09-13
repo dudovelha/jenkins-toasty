@@ -5,8 +5,11 @@ class JenkinsStatus {
     constructor() {
         this._jobInfo = null;
         this._buildInfo = null;
+        this._blameList = [];
         let config = JSON.parse(fs.readFileSync('./app/config.json'));
-        this.jenkins = require('jenkins')({ baseUrl: `http://${config.username}:${config.password}.@jenkins.weg.net:8080`, crumbIssuer: true, promisify: true });
+
+        this.jenkins = require('jenkins')({ baseUrl: `http://${config.username}:${config.password}@jenkins.weg.net:8080`, crumbIssuer: true, promisify: true });
+        this._project = config.project;
     }
 
     get jobInfo() {
@@ -29,22 +32,32 @@ class JenkinsStatus {
 
     async update() {
         let blameList = [];
-        let jobInfo = await jenkins.job.get('pipeline-maestro');
+        let jobInfo;
+
+        try {
+            jobInfo = await this.jenkins.job.get(this._project);
+        } catch (err) {
+            console.log(err);
+        }
 
         let lastBuild = jobInfo.lastBuild.number;
         let lastSuccessfulBuild = jobInfo.lastSuccessfulBuild.number;
-        let buildInfo = await jenkins.build.get('pipeline-maestro', lastBuild);
+        let buildInfo = await this.jenkins.build.get(this._project, lastBuild);
         if (buildInfo.result == 'FAILURE') {
             let firstUnsuccessfulBuild = buildInfo;
             if (lastBuild > lastSuccessfulBuild) {
-                firstUnsuccessfulBuild = await jenkins.build.get('pipeline-maestro', lastSuccessfulBuild + 1);
+                try {
+                    firstUnsuccessfulBuild = await this.jenkins.build.get(this._project, lastSuccessfulBuild + 1);
+                } catch (err) {
+                    firstUnsuccessfulBuild = buildInfo;
+                }
             }
-
             firstUnsuccessfulBuild.culprits.forEach(culprit => {
                 let array = culprit.absoluteUrl.split("/");
                 blameList.push(array[array.length - 1]);
             })
         }
+        console.log('blamelist', blameList);
         this._blameList = blameList;
         this._jobInfo = jobInfo;
         this._buildInfo = buildInfo;
