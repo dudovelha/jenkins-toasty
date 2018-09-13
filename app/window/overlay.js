@@ -15,7 +15,7 @@ class Overlay {
         this._mainWindow = mainWindow;
     }
 
-    createWindow() {
+    createWindow(debug) {
         this._mainWindow = new BrowserWindow({
             width: 800,
             height: 600,
@@ -27,17 +27,19 @@ class Overlay {
             resizable: false,
             skipTaskbar: true
         });
-        this._mainWindow.setIgnoreMouseEvents(true);
-        //this._mainWindow.openDevTools();
-        this._mainWindow.loadFile('./window/index.html');
+        if(!debug)
+            this._mainWindow.setIgnoreMouseEvents(true);
+        if(debug)
+            this._mainWindow.openDevTools();
+        this._mainWindow.loadFile('./app/window/index.html');
         this._mainWindow.on('closed', function () {
             _mainWindow = null;
         })
     }
 
-    toasty() {
+    toasty(blameList) {
         if(this._mainWindow)
-            this._mainWindow.webContents.send('toasty', '../assets/toasty.png');
+            this._mainWindow.webContents.send('toasty', blameList);
     }
 }
 
