@@ -6,10 +6,16 @@ class JenkinsStatus {
         this._jobInfo = null;
         this._buildInfo = null;
         this._blameList = [];
-        let config = JSON.parse(fs.readFileSync('./app/config.json'));
-
+        let config;
+        try {
+            config = JSON.parse(fs.readFileSync('./app/config.json'));
+        } catch(err) {
+            console.log(err);
+            config = JSON.parse(fs.readFileSync(`${__dirname}/../config.json`));
+        }
         this.jenkins = require('jenkins')({ baseUrl: `http://${config.username}:${config.password}@jenkins.weg.net:8080`, crumbIssuer: true, promisify: true });
         this._project = config.project;
+        console.log('project', this._project)
     }
 
     get jobInfo() {
@@ -21,8 +27,10 @@ class JenkinsStatus {
     }
 
     get status() {
-        if (this._buildInfo)
+        if (this._buildInfo && this._buildInfo.result)
             return this._buildInfo.result;
+        else if(this._buildInfo && this._buildInfo.building)
+            return 'BUILDING'
         return null;
     }
 
@@ -42,7 +50,14 @@ class JenkinsStatus {
 
         let lastBuild = jobInfo.lastBuild.number;
         let lastSuccessfulBuild = jobInfo.lastSuccessfulBuild.number;
-        let buildInfo = await this.jenkins.build.get(this._project, lastBuild);
+        let buildInfo;
+
+        try {
+            buildInfo = await this.jenkins.build.get(this._project, lastBuild);
+        } catch (err) {
+            console.log(err);
+        }
+
         if (buildInfo.result == 'FAILURE') {
             let firstUnsuccessfulBuild = buildInfo;
             if (lastBuild > lastSuccessfulBuild) {
@@ -57,10 +72,10 @@ class JenkinsStatus {
                 blameList.push(array[array.length - 1]);
             })
         }
-        console.log('blamelist', blameList);
         this._blameList = blameList;
         this._jobInfo = jobInfo;
         this._buildInfo = buildInfo;
+        console.log('Project '+this._project+' status: '+this.status);
     }
 }
 

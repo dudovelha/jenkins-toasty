@@ -7,9 +7,10 @@ ipcRenderer.on('toasty', (event, data) => {
         toastyDiv = document.getElementById('toasty');
     
     let count = 1;
+    debugger;
     data.forEach(culprit => {
         setTimeout(() => {
-            if( fs.existsSync(`../assets/${culprit}.png`)) {
+            if( fs.existsSync(`${__dirname}/../assets/${culprit}.png`)) {
                 image.src = `../assets/${culprit}.png`;
             } else {
                 image.src = `../assets/toasty.png`;
@@ -17,8 +18,8 @@ ipcRenderer.on('toasty', (event, data) => {
             toastyHeader.innerHTML = culprit;
             if (!toastyDiv.classList.contains('show-dan'))
                 toastyDiv.classList.add('show-dan');
-            setTimeout(() => toastyDiv.classList.remove('show-dan'), 1000);
-        }, (count * 2) * 1000);
+            setTimeout(() => toastyDiv.classList.remove('show-dan'), 2000);
+        }, (count * 3) * 1000);
         count++;
     });
 });

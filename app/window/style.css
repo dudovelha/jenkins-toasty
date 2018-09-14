@@ -1,8 +1,8 @@
 @keyframes showToasty {
-	0%  {right: -200px;}
+	0%  {right: -500px;}
 	40% {right: 0px;}
 	60% {right: 0px;}
-	100% {right: -200px;}
+	100% {right: -500px;}
 }
 
 html, body {
@@ -11,6 +11,13 @@ html, body {
     width: 95vw;
     resize: none;
     overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    text-shadow: 2px 0 0 black, -2px 0 0 black, 0 2px 0 black, 0 -2px 0 black, 1px 1px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
 
 .toasty {
@@ -23,6 +30,6 @@ html, body {
 .show-dan {
     display: initial;
     animation-name: showToasty;
-    animation-duration: 1s;
+    animation-duration: 2s;
     animation-iteration-count: 1;
 }

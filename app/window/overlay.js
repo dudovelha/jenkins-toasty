@@ -38,8 +38,10 @@ class Overlay {
     }
 
     toasty(blameList) {
-        if(this._mainWindow)
+        if(this._mainWindow) {
+            console.log('blamelist', blameList);
             this._mainWindow.webContents.send('toasty', blameList);
+        }
     }
 }
 

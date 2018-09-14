@@ -12,15 +12,16 @@ class Notifier {
 
         if (test) {
             setInterval(() => {
-                this._overlay.toasty(['toasty']);
-            }, 2000);
+                this._overlay.toasty(['fariase', 'gustavoj', 'jschmitt','felipefv','antoniobj','mcanaparro','ramont']);
+            }, 25000);
         }
         this.registerNotifications();
     }
 
     registerNotifications() {
         let js = this._jenkinsStatus;
-        schedule.scheduleJob('* /5 * * * *', () => {
+        schedule.scheduleJob('*/5 * * * *', (fireDate) => {
+            console.log('fireDate', fireDate);
             js.update();
             if (js.status == 'FAILURE') {
                 this._overlay.toasty(js.blameList);
